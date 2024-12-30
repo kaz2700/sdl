@@ -13,14 +13,14 @@
           inherit system;
         };
       in
-      with pkgs;
       {
-        devShells.default = mkShell {
+        devShells.default = pkgs.mkShell {
           buildInputs = [
-            freeglut
-            gcc
-            glew
-	    SDL2
+            pkgs.gcc
+            pkgs.SDL2
+	    pkgs.SDL2.dev
+            pkgs.SDL2_image
+            pkgs.pkg-config
           ];
         };
       }
