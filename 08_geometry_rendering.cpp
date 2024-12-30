@@ -19,10 +19,10 @@ bool init();
 bool loadMedia();
 
 //Frees media and shuts down SDL
-void close();
+void cierra();
 
 //Loads individual image as texture
-SDL_Texture* loadTexture( std::string path );
+SDL_Texture* loadTexture( char* path );
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
@@ -93,7 +93,7 @@ bool loadMedia()
 	return success;
 }
 
-void close()
+void cierra()
 {
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -200,7 +200,7 @@ int main( int argc, char* args[] )
 	}
 
 	//Free resources and close SDL
-	close();
+	cierra();
 
 	return 0;
 }

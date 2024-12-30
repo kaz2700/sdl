@@ -9,12 +9,12 @@ int init();
 
 void cierra();
 
+int x = SCREEN_WIDTH/2;
+
 SDL_Window* window = NULL;
 
 SDL_Renderer* renderer = NULL;
 	
-SDL_Surface* screenSurface = NULL;
-
 int init() {
 	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
 		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
@@ -29,8 +29,11 @@ int init() {
     }
 
     renderer = SDL_CreateRenderer(window, -1, 0);
-
-    screenSurface = SDL_GetWindowSurface( window );
+    
+    if ( renderer == NULL ) {
+        printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+        return 0;
+    }
 
 	return 1;
 }
@@ -58,9 +61,14 @@ int main( int argc, char* args[] ) {
             }
         }
 
-        SDL_BlitSurface( screenSurface, NULL, screenSurface, NULL );
-
-        SDL_UpdateWindowSurface( window );
+        SDL_SetRenderDrawColor(renderer,
+                   255, 0, 0,
+                   255);
+        SDL_RenderClear(renderer);
+        
+        SDL_RenderDrawPoint(renderer, x, SCREEN_HEIGHT/2);
+        SDL_RenderPresent(renderer); // Show render on window
+        x++;
     }
 
 	cierra();
