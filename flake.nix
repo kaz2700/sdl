@@ -21,6 +21,7 @@
 	    pkgs.SDL2.dev
             pkgs.SDL2_image
             pkgs.pkg-config
+	    pkgs.gnumake
           ];
         };
       }

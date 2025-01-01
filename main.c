@@ -1,18 +1,15 @@
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include "particle.h"
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 int init();
-
 void cierra();
 
-int x = SCREEN_WIDTH/2;
-
 SDL_Window* window = NULL;
-
 SDL_Renderer* renderer = NULL;
 	
 int init() {
@@ -51,24 +48,32 @@ int main( int argc, char* args[] ) {
         return 0;
 	}
 
+    Particle part;
+    part.x = SCREEN_WIDTH/2;
+
     int quit = 0;
     SDL_Event e;
-
     while( !quit ) {
         while( SDL_PollEvent( &e ) != 0 ) {
             if( e.type == SDL_QUIT ) {
                 quit = 1;
             }
         }
-
+        //clear screen
         SDL_SetRenderDrawColor(renderer,
-                   255, 0, 0,
+                   0, 0, 0,
                    255);
         SDL_RenderClear(renderer);
+
+
+        SDL_SetRenderDrawColor(renderer,
+                   255, 255, 255,
+                   255);
+        SDL_RenderDrawPoint(renderer, (int) part.x, SCREEN_HEIGHT/2);
         
-        SDL_RenderDrawPoint(renderer, x, SCREEN_HEIGHT/2);
-        SDL_RenderPresent(renderer); // Show render on window
-        x++;
+
+        SDL_RenderPresent(renderer);
+        part.x += 0.1;
     }
 
 	cierra();
