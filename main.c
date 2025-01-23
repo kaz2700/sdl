@@ -65,9 +65,9 @@ int main( int argc, char* args[] ) {
         fprintf(stderr, "Memory allocation failed\n");
         return 1;
     }*/
-    particle -> x = SCREEN_WIDTH/2;
-    particle -> y = SCREEN_HEIGHT/2;
-    particle -> radius = 50;
+    particle1.x = SCREEN_WIDTH/2;
+    particle1.y = SCREEN_HEIGHT/2;
+    particle1.radius = 50;
 
     int quit = 0;
     SDL_Event e;
@@ -82,14 +82,13 @@ int main( int argc, char* args[] ) {
         //initialize draw color
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-        gravity(&particle);
-        check_limits(&particle);
+        gravity(&particle1);
+        check_limits(&particle1);
 
-        SDL_Rect rect = {particle -> x, particle -> y, particle -> radius, particle -> radius};  
+        SDL_Rect rect = {particle1.x, particle1.y, particle1.radius, particle1.radius};  
         SDL_RenderDrawRect(renderer, &rect);
         //SDL_RenderDrawPoint(renderer, (int) particle -> x, particle -> y);
         
-
         SDL_RenderPresent(renderer);
 
         sleep(dt);
