@@ -1,11 +1,12 @@
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include "physics.h"
 #include "particle.h"
 #include <unistd.h>
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 600;
+const int SCREEN_HEIGHT = 600;
 
 int init();
 void cierra();
@@ -13,7 +14,9 @@ void cierra();
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 Particle particle1;
-float dt = 1;
+float dt = 0.01; //seconds
+float time = 0.0; //seconds
+float box_length = 1; //meters
 	
 int init() {
 	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
@@ -45,14 +48,36 @@ void cierra() {
 	SDL_Quit();
 }
 
-void gravity(Particle* particle) {
-    particle -> y = particle -> y + -10.0*dt;
-    printf("%f\n", particle -> y);
+void check_limits(Particle* particle) { 
+    if (particle -> position[1] > box_length || particle -> position[1] < particle -> radius) {
+        particle -> position[1] = particle -> radius;
+        particle -> velocity[1] = -0.95 * particle -> velocity[1];
+    }
+
+    if (particle -> position[0] > box_length || particle -> position[0] < particle -> radius) {
+        //particle -> position[0] = particle -> radius;
+        particle -> velocity[0] = -0.95 * particle -> velocity[0];
+    }
 }
 
-void check_limits(Particle* particle) {
-    if (particle -> y > SCREEN_HEIGHT || particle -> y < 0)
-        particle -> y = SCREEN_HEIGHT/2;
+void translate_coords_and_draw(Particle particle) {
+    float x = (1 - (box_length - particle.position[0])) * SCREEN_WIDTH;
+    float y = (box_length - particle.position[1]) * SCREEN_HEIGHT;
+    SDL_Rect rect = {x, y, particle.radius * 300, particle.radius * 300};
+
+    SDL_RenderDrawRect(renderer, &rect);
+}
+
+void draw(){
+    //clear screen
+    SDL_SetRenderDrawColor(renderer,0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    //choose draw color
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    // for particle in particles
+        drawParticle(&particle1);
 }
 
 int main( int argc, char* args[] ) {
@@ -60,14 +85,12 @@ int main( int argc, char* args[] ) {
 		printf( "Failed to initialize!\n" );
         return 0;
 	}
-    /*particle = (Particle*)malloc(sizeof(Particle));
-    if (particle == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return 1;
-    }*/
-    particle1.x = SCREEN_WIDTH/2;
-    particle1.y = SCREEN_HEIGHT/2;
-    particle1.radius = 50;
+
+    particle1.position[0] = box_length / 3;
+    particle1.position[1] = box_length / 2; //meters (we imagine having a 10x10x10cm box)
+    particle1.velocity[0] = 5;
+    particle1.velocity[1] = 0;
+    particle1.radius = 0.05;
 
     int quit = 0;
     SDL_Event e;
@@ -76,22 +99,19 @@ int main( int argc, char* args[] ) {
             if( e.type == SDL_QUIT )
                 quit = 1;
 
-        //clear screen
-        SDL_SetRenderDrawColor(renderer,0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        //initialize draw color
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        draw();
 
-        gravity(&particle1);
+        //initialize draw color
+
+        gravity(&particle1, &dt);
         check_limits(&particle1);
 
-        SDL_Rect rect = {particle1.x, particle1.y, particle1.radius, particle1.radius};  
-        SDL_RenderDrawRect(renderer, &rect);
+        translate_coords_and_draw(particle1);
         //SDL_RenderDrawPoint(renderer, (int) particle -> x, particle -> y);
         
         SDL_RenderPresent(renderer);
-
-        sleep(dt);
+        time = time + dt;
+        usleep(1000000 * dt); //microseconds to seconds * 1000000
     }
 
 	cierra();

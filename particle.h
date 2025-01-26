@@ -1,12 +1,13 @@
-#ifndef ADDITIONAL_H
-#define ADDITIONAL_H
+#ifndef particle_header
+#define particle_header
 
 struct {
-    float x;
-    float y;
+    float position[2];
+    float velocity[2];
     float radius;
     float mass;
-    //TODO charge etc
 } typedef Particle;
+
+void drawParticle(Particle* particle);
 
 #endif // ADDITIONAL_H
