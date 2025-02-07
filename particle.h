@@ -8,6 +8,4 @@ struct {
     float mass;
 } typedef Particle;
 
-void drawParticle(Particle* particle);
-
 #endif // ADDITIONAL_H
