@@ -4,4 +4,5 @@
 
 float distance(float pos1[], float pos2[]);
 
+
 #endif

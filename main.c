@@ -7,21 +7,29 @@
 #include <time.h>
 
 float dt = 0.01; //seconds
+int num_of_particles = 100;
 
 void initialize_particle(Particle* particles, int num_of_particles) {
     Particle particle;
 
-    particle.position[0] = box_length / 3;
+    particle.position[0] = box_length / 2;
     particle.position[1] = box_length / 2;
-    particle.velocity[0] = 5;
+    particle.velocity[0] = 1;
     particle.velocity[1] = 0;
     particle.radius = 0.01;
+    particle.mass = 1;
+    particle.charge = 0.01;
+    particle.id = 0;
 
     for(int i = 0; i < num_of_particles; i++) {
             particles[i] = particle;
             if (i != 0) {
+                particles[i].position[0] = (float) random() / RAND_MAX * box_length;
+                particles[i].position[1] = (float) random() / RAND_MAX * box_length;
                 particles[i].velocity[0] = (float) random() / RAND_MAX;
                 particles[i].velocity[1] = (float) random() / RAND_MAX;
+                particles[i].id = particles[i-1].id + 1;
+                //particles[i].charge = -1 * particles[i-1].charge;
             }
         }
 }
@@ -32,9 +40,7 @@ int main( int argc, char* args[] ) {
         return 0;
 	}
     
-    Particle particles[100];
-
-    int num_of_particles = sizeof(particles) / sizeof(particles[0]);
+    Particle particles[num_of_particles];
 
     initialize_particle(particles, num_of_particles);
 
