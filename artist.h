@@ -16,6 +16,7 @@ extern float box_length; //meters
 int init();
 void close_sdl();
 void drawParticle(float* position, float radius);
+void drawHalo(float* position, float radius);
 float* translate_position(float* position);
 void draw(Particle* particles, int num_of_particles);
 

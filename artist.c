@@ -30,6 +30,9 @@ int init() {
         return 0;
     }
 
+    //this enables blending in order for alpha to work when drawing
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
 	return 1;
 }
 
@@ -57,11 +60,9 @@ void draw(Particle particles[], int num_of_particles){
     SDL_SetRenderDrawColor(renderer,0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    //choose draw color
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
     for(int i = 0; i < num_of_particles; i++) {
         drawParticle(particles[i].position, particles[i].radius * SCREEN_WIDTH/box_length);
+        //drawHalo(particles[i].position, particles[i].radius*100);
     }
 
     SDL_RenderPresent(renderer);
@@ -70,9 +71,32 @@ void draw(Particle particles[], int num_of_particles){
 void drawParticle(float* position, float radius) {
     float* translated_position = translate_position(position);
     float h;
+    int alpha;
     for(int i = -radius; i <= radius; i++) {
         h = sqrt( pow(radius, 2) - pow(i, 2));
-        for(int j = -h; j <= h; j++)
+        for(int j = -h; j <= h; j++) {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
             SDL_RenderDrawPoint(renderer, translated_position[0] + i, translated_position[1] + j);
+        }
+    }
+}
+
+void drawHalo(float* position, float radius) {
+    float* translated_position = translate_position(position);
+    float h;
+    float alpha;
+    int range = radius * 10;
+    float r;
+    for(int i = -range; i <= range; i++) {
+        h = sqrt( pow(range, 2) - pow(i, 2));
+        for(int j = -h; j <= h; j++) {
+            r = sqrt(pow(i, 2) + pow(j, 2));
+            if (r == 0)
+                alpha = 1;
+            else
+                alpha = 1/(r);
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, alpha * 255);
+            SDL_RenderDrawPoint(renderer, translated_position[0] + i, translated_position[1] + j);
+        }
     }
 }

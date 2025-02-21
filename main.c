@@ -14,11 +14,11 @@ void initialize_particle(Particle* particles, int num_of_particles) {
 
     particle.position[0] = box_length / 2;
     particle.position[1] = box_length / 2;
-    particle.velocity[0] = 1;
+    particle.velocity[0] = 0;
     particle.velocity[1] = 0;
     particle.radius = 0.01;
     particle.mass = 1;
-    particle.charge = 0.01;
+    particle.charge = 0.1;
     particle.id = 0;
 
     for(int i = 0; i < num_of_particles; i++) {
@@ -51,7 +51,7 @@ int main( int argc, char* args[] ) {
             if( e.type == SDL_QUIT )
                 quit = 1;
 
-        tick(particles, &dt, num_of_particles);
+        tick(particles, dt, num_of_particles);
         draw(particles, num_of_particles);
         
         usleep(1000000 * dt); //microseconds
