@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include "artist.h"
 #include <stdio.h>
+#include "math_functions.h"
 
 int SCREEN_WIDTH = 600;
 int SCREEN_HEIGHT = 600;
@@ -55,27 +56,29 @@ float* translate_position(float* position) {
     return translated_position;
 }
 
-void draw(Particle particles[], int num_of_particles){
+void draw(Particle* particles[], int num_of_particles){
     //clear screen
     SDL_SetRenderDrawColor(renderer,0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     for(int i = 0; i < num_of_particles; i++) {
-        drawParticle(particles[i].position, particles[i].radius * SCREEN_WIDTH/box_length);
+        drawParticle(particles[i]);
         //drawHalo(particles[i].position, particles[i].radius*100);
     }
 
     SDL_RenderPresent(renderer);
 }
 
-void drawParticle(float* position, float radius) {
-    float* translated_position = translate_position(position);
+void drawParticle(Particle* particle) {
+    float radius = particle -> radius * SCREEN_WIDTH/box_length;
+    float* translated_position = translate_position(particle -> position);
     float h;
-    int alpha;
+    int r;
     for(int i = -radius; i <= radius; i++) {
         h = sqrt( pow(radius, 2) - pow(i, 2));
         for(int j = -h; j <= h; j++) {
-            SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+            r = (int) 255* sqrt(pow(particle -> velocity[0], 2) + pow(particle -> velocity[1], 2));
+            SDL_SetRenderDrawColor(renderer, r, 1-r/2, 1-r, 255);
             SDL_RenderDrawPoint(renderer, translated_position[0] + i, translated_position[1] + j);
         }
     }

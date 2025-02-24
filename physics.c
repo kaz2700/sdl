@@ -21,17 +21,17 @@ void update_positions(Particle* particle, float dt) {
 }
 
 void check_limits(Particle* particle, float dt) {
-    if (particle -> position[1] + particle -> radius + particle -> velocity[1] * dt > box_length ||
-        particle -> position[1] - particle -> radius + particle -> velocity[1] * dt  < 0)
+    if (particle -> position[1] + particle -> radius + particle -> velocity[1] * dt >= box_length ||
+        particle -> position[1] - particle -> radius + particle -> velocity[1] * dt  <= 0)
             particle -> velocity[1] = -1 * collision_energy_transmission * particle -> velocity[1];
 
-    if (particle -> position[0] + particle -> radius + particle -> velocity[0] * dt  > box_length ||
-        particle -> position[0] - particle -> radius + particle -> velocity[0] * dt  < 0)
+    if (particle -> position[0] + particle -> radius + particle -> velocity[0] * dt  >= box_length ||
+        particle -> position[0] - particle -> radius + particle -> velocity[0] * dt  <= 0)
             particle -> velocity[0] = -1 * collision_energy_transmission * particle -> velocity[0];
 }
 
-void check_collision(Particle* particle1, Particle* particle2) {
-    if(distance(particle1 -> position, particle2 -> position) <= particle1 -> radius + particle2 -> radius)
+void check_collision(Particle* particle1, Particle* particle2, float dt) {
+    if(distance_on_motion(particle1 -> position, particle2 -> position, particle1 -> velocity, particle2 -> velocity, dt) <= particle1 -> radius + particle2 -> radius)
         collision(particle1, particle2);
 }
 
@@ -74,26 +74,26 @@ float* repulsion_force(Particle* particle1, Particle* particle2) {
     //change acceleration, add acceleration
 }
 
-void update_acceleration(Particle particles[], int particle_index, int num_of_particles) {
-    particles[particle_index].acceleration[0] = 0;
-    particles[particle_index].acceleration[1] = -gravity;
+void update_acceleration(Particle* particles[], int particle_index, int num_of_particles, float dt) {
+    particles[particle_index] -> acceleration[0] = 0;
+    particles[particle_index] -> acceleration[1] = -gravity;
 
     for(int i = 0; i < num_of_particles; i++) {
         if (particle_index == i)
             continue;    
         //todo not call twice
-        //particles[particle_index].acceleration[0] = particles[particle_index].acceleration[0] + repulsion_force(&particles[particle_index], &particles[i])[0]/particles[particle_index].mass;
-        //particles[particle_index].acceleration[1] = particles[particle_index].acceleration[1] + repulsion_force(&particles[particle_index], &particles[i])[1]/particles[particle_index].mass;
+        particles[particle_index] -> acceleration[0] = particles[particle_index] -> acceleration[0] + repulsion_force(particles[particle_index], particles[i])[0]/particles[particle_index] -> mass;
+        particles[particle_index] -> acceleration[1] = particles[particle_index] -> acceleration[1] + repulsion_force(particles[particle_index], particles[i])[1]/particles[particle_index] -> mass;
         
-        check_collision(&particles[particle_index], &particles[i]);
+        check_collision(particles[particle_index], particles[i], dt);
     } 
 }
     //todo add viscosity
 
-void tick(Particle particles[], float dt, int num_of_particles) {
+void tick(Particle* particles[], float dt, int num_of_particles) {
     for(int i = 0; i < num_of_particles; i++) {
             
-            update_acceleration(particles, i, num_of_particles);
-            update_positions(&particles[i], dt);
+            update_acceleration(particles, i, num_of_particles, dt);
+            update_positions(particles[i], dt);
         } 
 }
