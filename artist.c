@@ -77,8 +77,8 @@ void drawParticle(Particle* particle) {
     for(int i = -radius; i <= radius; i++) {
         h = sqrt( pow(radius, 2) - pow(i, 2));
         for(int j = -h; j <= h; j++) {
-            r = (int) 255* sqrt(pow(particle -> velocity[0], 2) + pow(particle -> velocity[1], 2));
-            SDL_SetRenderDrawColor(renderer, r, 1-r/2, 1-r, 255);
+            r = (int) 100 * sqrt(pow(particle -> velocity[0], 2) + pow(particle -> velocity[1], 2));
+            SDL_SetRenderDrawColor(renderer, r, 255-r, 255-r, 255);
             SDL_RenderDrawPoint(renderer, translated_position[0] + i, translated_position[1] + j);
         }
     }

@@ -5,7 +5,8 @@
 #include "math_functions.h"
 #include <math.h>
 
-float collision_energy_transmission = 0.75;
+float collision_energy_transmission = 0.98;
+float collision_energy_transmission_walls = 0.75;
 float gravity = 10;
 float k = 1;
 
@@ -23,15 +24,15 @@ void update_positions(Particle* particle, float dt) {
 void check_limits(Particle* particle, float dt) {
     if (particle -> position[1] + particle -> radius + particle -> velocity[1] * dt >= box_length ||
         particle -> position[1] - particle -> radius + particle -> velocity[1] * dt  <= 0)
-            particle -> velocity[1] = -1 * collision_energy_transmission * particle -> velocity[1];
+            particle -> velocity[1] = -1 * collision_energy_transmission_walls * particle -> velocity[1];
 
     if (particle -> position[0] + particle -> radius + particle -> velocity[0] * dt  >= box_length ||
         particle -> position[0] - particle -> radius + particle -> velocity[0] * dt  <= 0)
-            particle -> velocity[0] = -1 * collision_energy_transmission * particle -> velocity[0];
+            particle -> velocity[0] = -1 * collision_energy_transmission_walls * particle -> velocity[0];
 }
 
 void check_collision(Particle* particle1, Particle* particle2, float dt) {
-    if(distance_on_motion(particle1 -> position, particle2 -> position, particle1 -> velocity, particle2 -> velocity, dt) <= particle1 -> radius + particle2 -> radius)
+    if(distance_on_motion(particle1, particle2, dt) <= particle1 -> radius + particle2 -> radius)
         collision(particle1, particle2);
 }
 
@@ -47,10 +48,10 @@ void collision(Particle* particle1, Particle* particle2) {
     float m1 = particle1 -> mass;
     float m2 = particle2 -> mass;
 
-    particle1 -> velocity[0] = collision_energy_transmission * (v11 - 2*m2/(m1+m2) * (v11 - v21) * (x11 - x21) / (x11 - x21)); 
-    particle1 -> velocity[1] = collision_energy_transmission * (v12 - 2*m2/(m1+m2) * (v12 - v22) * (x12 - x22) / (x12 - x22));
-    particle2 -> velocity[0] = collision_energy_transmission * (v21 - 2*m1/(m1+m2) * (v21 - v11) * (x21 - x11) / (x21 - x11));
-    particle2 -> velocity[1] = collision_energy_transmission * (v22 - 2*m1/(m1+m2) * (v22 - v12) * (x22 - x12) / (x22 - x12));
+    particle1 -> velocity[0] = collision_energy_transmission * (v11 - 2*m2/(m1+m2) * (v11 - v21)); 
+    particle1 -> velocity[1] = collision_energy_transmission * (v12 - 2*m2/(m1+m2) * (v12 - v22));
+    particle2 -> velocity[0] = collision_energy_transmission * (v21 - 2*m1/(m1+m2) * (v21 - v11));
+    particle2 -> velocity[1] = collision_energy_transmission * (v22 - 2*m1/(m1+m2) * (v22 - v12));
 }
 
 float* repulsion_force(Particle* particle1, Particle* particle2) {
@@ -82,9 +83,8 @@ void update_acceleration(Particle* particles[], int particle_index, int num_of_p
         if (particle_index == i)
             continue;    
         //todo not call twice
-        particles[particle_index] -> acceleration[0] = particles[particle_index] -> acceleration[0] + repulsion_force(particles[particle_index], particles[i])[0]/particles[particle_index] -> mass;
-        particles[particle_index] -> acceleration[1] = particles[particle_index] -> acceleration[1] + repulsion_force(particles[particle_index], particles[i])[1]/particles[particle_index] -> mass;
-        
+        //particles[particle_index] -> acceleration[0] = particles[particle_index] -> acceleration[0] + repulsion_force(particles[particle_index], particles[i])[0]/particles[particle_index] -> mass;
+        //particles[particle_index] -> acceleration[1] = particles[particle_index] -> acceleration[1] + repulsion_force(particles[particle_index], particles[i])[1]/particles[particle_index] -> mass;
         check_collision(particles[particle_index], particles[i], dt);
     } 
 }
@@ -92,7 +92,6 @@ void update_acceleration(Particle* particles[], int particle_index, int num_of_p
 
 void tick(Particle* particles[], float dt, int num_of_particles) {
     for(int i = 0; i < num_of_particles; i++) {
-            
             update_acceleration(particles, i, num_of_particles, dt);
             update_positions(particles[i], dt);
         } 
